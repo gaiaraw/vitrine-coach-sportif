@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaxFit - Votre Coach Sportif Personnel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav :class="{ 'nav-scrolled': isScrolled, 'nav-hidden': !isNavVisible }">
+            <div class="nav-content">
+                <div class="logo">MaxFit</div>
+                <div class="nav-links" :class="{ 'active': mobileMenuOpen }">
+                    <a href="#accueil" @click="scrollToSection('accueil')">Accueil</a>
+                    <a href="#services" @click="scrollToSection('services')">Services</a>
+                    <a href="#about" @click="scrollToSection('about')">À Propos</a>
+                    <a href="#transformations" @click="scrollToSection('transformations')">Transformations</a>
+                    <a href="#temoignages" @click="scrollToSection('temoignages')">Témoignages</a>
+                    <a href="#contact" @click="scrollToSection('contact')" class="cta-link">Me Contacter</a>
+                </div>
+                <div class="burger-menu" @click="toggleMobileMenu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section id="accueil" class="hero">
+            <div class="hero-content">
+                <h1>{{ heroTitle }}</h1>
+                <p class="hero-subtitle">{{ heroSubtitle }}</p>
+                <div class="hero-cta">
+                    <button @click="scrollToSection('contact')" class="cta-button">Commencer Maintenant</button>
+                    <button @click="scrollToSection('services')" class="secondary-button">Découvrir mes Services</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="services-section">
+            <h2>Mes Services</h2>
+            <div class="services-grid">
+                <div v-for="service in services" :key="service.id" class="service-card" @click="selectService(service)">
+                    <div class="service-icon">
+                        <i :class="service.icon"></i>
+                    </div>
+                    <h3>{{ service.name }}</h3>
+                    <p>{{ service.description }}</p>
+                    <span class="price">À partir de {{ service.price }}€</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>À Propos de Moi</h2>
+                    <div class="coach-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ stats.experience }}+</span>
+                            <span class="stat-label">Années d'Expérience</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ stats.clients }}+</span>
+                            <span class="stat-label">Clients Satisfaits</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ stats.transformations }}+</span>
+                            <span class="stat-label">Transformations</span>
+                        </div>
+                    </div>
+                    <p>{{ aboutText }}</p>
+                    <div class="certifications">
+                        <h3>Mes Certifications</h3>
+                        <ul>
+                            <li v-for="cert in certifications" :key="cert">{{ cert }}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img :src="coachImage" alt="Votre coach MaxFit">
+                </div>
+            </div>
+        </section>
+
+        <!-- Transformations Section -->
+        <section id="transformations" class="transformations-section">
+            <h2>Transformations</h2>
+            <div class="transformations-grid">
+                <div v-for="transformation in transformations" 
+                     :key="transformation.id" 
+                     class="transformation-card"
+                     @click="showTransformationDetails(transformation)">
+                    <div class="before-after">
+                        <img :src="transformation.beforeImage" alt="Avant">
+                        <img :src="transformation.afterImage" alt="Après">
+                    </div>
+                    <div class="transformation-info">
+                        <h3>{{ transformation.name }}</h3>
+                        <p>{{ transformation.duration }} | {{ transformation.type }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section id="temoignages" class="testimonials-section">
+            <h2>Ce Qu'ils En Disent</h2>
+            <div class="testimonials-slider" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
+                <div class="testimonials-container" :style="sliderStyle">
+                    <div v-for="testimonial in testimonials" 
+                         :key="testimonial.id" 
+                         class="testimonial-card">
+                        <div class="testimonial-image">
+                            <img :src="testimonial.image" :alt="testimonial.name">
+                        </div>
+                        <div class="testimonial-content">
+                            <p class="testimonial-text">"{{ testimonial.text }}"</p>
+                            <p class="testimonial-author">{{ testimonial.name }}</p>
+                            <p class="testimonial-info">{{ testimonial.achievement }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slider-controls">
+                    <button @click="prevTestimonial" class="slider-button prev">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button @click="nextTestimonial" class="slider-button next">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact-section">
+            <h2>Commencez Votre Transformation</h2>
+            <div class="contact-content">
+                <div class="contact-form">
+                    <form @submit.prevent="submitForm">
+                        <div class="form-group">
+                            <label for="name">Nom Complet</label>
+                            <input type="text" id="name" v-model="formData.name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" v-model="formData.email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Téléphone</label>
+                            <input type="tel" id="phone" v-model="formData.phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="goal">Objectif Principal</label>
+                            <select id="goal" v-model="formData.goal" required>
+                                <option value="">Sélectionnez votre objectif</option>
+                                <option v-for="goal in goals" :key="goal" :value="goal">{{ goal }}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message (Optionnel)</label>
+                            <textarea id="message" v-model="formData.message" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="submit-button">Envoyer</button>
+                    </form>
+                </div>
+                <div class="contact-info">
+                    <div class="info-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Localisation</h3>
+                        <p>{{ contactInfo.address }}</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-phone"></i>
+                        <h3>Téléphone</h3>
+                        <p>{{ contactInfo.phone }}</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-envelope"></i>
+                        <h3>Email</h3>
+                        <p>{{ contactInfo.email }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MaxFit</h3>
+                    <p>Votre transformation commence ici</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liens Rapides</h3>
+                    <a href="#services">Services</a>
+                    <a href="#about">À Propos</a>
+                    <a href="#transformations">Transformations</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Suivez-moi</h3>
+                    <div class="social-links">
+                        <a :href="social.instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a :href="social.facebook" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a :href="social.youtube" target="_blank"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; {{ currentYear }} MaxFit. Tous droits réservés.</p>
+            </div>
+        </footer>
+
+        <!-- Modal for Service Details -->
+        <div v-if="selectedService" class="modal" @click="closeModal">
+            <div class="modal-content" @click.stop>
+                <button class="close-button" @click="closeModal">&times;</button>
+                <h2>{{ selectedService.name }}</h2>
+                <div class="modal-body">
+                    <p>{{ selectedService.fullDescription }}</p>
+                    <ul class="service-features">
+                        <li v-for="feature in selectedService.features" :key="feature">
+                            <i class="fas fa-check"></i> {{ feature }}
+                        </li>
+                    </ul>
+                    <div class="price-section">
+                        <span class="price">{{ selectedService.price }}€</span>
+                        <span class="price-period">{{ selectedService.period }}</span>
+                    </div>
+                    <button @click="scrollToSection('contact')" class="cta-button">Réserver Maintenant</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
